@@ -29,7 +29,7 @@ public class JwtTool {
         return Jwts.builder()
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + durata))
-                .subject(utente.getEmail())
+                .subject(utente.getId()+"")
                 .claim("username", utente.getUsername())
                 .claim("ruoli", utente.getRuoli().stream().map(Enum::name).collect(Collectors.toList()))
                 .signWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
@@ -46,13 +46,8 @@ public class JwtTool {
 
 
     public Utente getUserFromToken(String token) throws NotFoundException {
-        String email = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        int id = Integer.parseInt(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).build().parseSignedClaims(token).getPayload().getSubject());
 
-        return utenteService.getUtenteByEmail(email);  // Assicurati che esista
+        return utenteService.getUtenteById(id);
     }
 }

@@ -1,5 +1,6 @@
 package it.epicode.bwfinalboss.security;
 
+import it.epicode.bwfinalboss.enumeration.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,14 +36,19 @@ public class SecurityConfig {
 
         httpSecurity.cors(Customizer.withDefaults());
 
+        // autenticazione accessibile a tutti
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers("/auth/**").permitAll());
 
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/auth/**").permitAll());
-//        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.GET,"/studenti/**").permitAll());
+        //get accessibile ad entrambi i role
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.GET, "/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name()));
 
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/eventi/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/prenotazioni/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/users/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.GET).permitAll());
+        // post sui clienti permessa a tutti
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/clienti/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name()));
+
+        //solo admin
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/**").hasRole(Role.ADMIN.name()));
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.PUT, "/**").hasRole(Role.ADMIN.name()));
+        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.DELETE, "/**").hasRole(Role.ADMIN.name()));
 
         httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
 

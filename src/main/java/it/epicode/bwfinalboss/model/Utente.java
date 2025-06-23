@@ -19,9 +19,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class Utente implements UserDetails {
     @Id
+    private int id;
+
     private String email;
 
+    @Column(unique = true)
     private String username;
+
     private String password;
     private String nome;
     private String cognome;
@@ -68,5 +72,7 @@ public class Utente implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 
 }

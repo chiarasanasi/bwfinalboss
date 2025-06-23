@@ -58,8 +58,12 @@ public class UtenteService {
                 .orElseThrow(() -> new NotFoundException("Utente non trovato."));
     }
     public Utente getUtenteByEmail(String email) throws NotFoundException {
-        return utenteRepository.findById(email)
+        return utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Utente non trovato con email: " + email));
+    }
+    public Utente getUtenteById(int id) throws NotFoundException {
+        return utenteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Utente con il seguenti id " + id + "non trovato."));
     }
 
     public Utente saveUser(UtenteDto utenteDto) {
