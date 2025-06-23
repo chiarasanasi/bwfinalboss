@@ -18,50 +18,53 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-
-//
-
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtTool jwtTool;
 
-
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
-        String authorization =request.getHeader("Authorization");
+        String authorization = request.getHeader("Authorization");
 
-
-        if(authorization==null || !authorization.startsWith("Bearer ")){
-            throw new UnAuthorizedException("Token non presente , non sei autorizzato ad usare il servizio richiesto");
-
-        }else{
-
-            String token= authorization.substring(7);
-
-            jwtTool.validateToken(token);
-
-            try{
-                //recupero utente collegato al token
-                Utente utente = jwtTool.getUserFromToken(token);
-                //creo un oggetto authetication inserendogli all'interno l'utente recuperato e il suo ruolo
-                Authentication authentication = new UsernamePasswordAuthenticationToken(utente, null,utente.getAuthorities());
-                //aggiugno l'autenticazione con l'utente nel contesto di Sprign Security
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }catch(NotFoundException e){
-                throw new UnAuthorizedException("L'utente collegato al token non è stato trovato.");
-            }
-
-            filterChain.doFilter(request,response);
-
+        // Se non c'è token o non inizia con Bearer, lascia passare la richiesta (non autenticata)
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
-    }
 
+        String token = authorization.substring(7);
+
+        try {
+            jwtTool.validateToken(token);
+            Utente utente = jwtTool.getUserFromToken(token);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    utente,
+                    null,
+                    utente.getAuthorities()
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (NotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Utente collegato al token non trovato.");
+            return;
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token non valido o scaduto.");
+            return;
+        }
+
+        filterChain.doFilter(request, response);
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());
     }
 }
+

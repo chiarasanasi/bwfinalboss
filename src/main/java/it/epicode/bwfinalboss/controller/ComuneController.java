@@ -19,7 +19,7 @@ public class ComuneController {
     private final ImportComuniService importComuniService;
 
     @PostMapping("/import")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> importaComuni(@RequestParam("file") MultipartFile file) {
         try {
             importComuniService.importaComuni(file);
