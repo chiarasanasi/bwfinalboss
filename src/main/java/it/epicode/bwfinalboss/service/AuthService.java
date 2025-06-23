@@ -25,11 +25,11 @@ public class AuthService {
         Utente utente = utenteRepository.findByUsernameAndEmail((loginDto.getUsername()) , loginDto.getEmail()).orElseThrow(()->new NotFoundException("L'utente con questo username " + loginDto.getUsername() + " non trovato."));
 
         if((passwordEncoder.matches(loginDto.getPassword(), utente.getPassword()))){
-
-
+            // l'utente è autenticato, perche username e password combaciano
             return jwtTool.createToken(utente);
-        }else{
-            throw new NotFoundException("L'utente con questo username/password non esiste.");
+        }else {
+            throw  new NotFoundException("Utente con questo username/password non trovato");
         }
     }
+
 }
