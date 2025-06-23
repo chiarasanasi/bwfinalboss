@@ -2,7 +2,7 @@ package it.epicode.bwfinalboss.security;
 
 import it.epicode.bwfinalboss.exception.NotFoundException;
 import it.epicode.bwfinalboss.exception.UnAuthorizedException;
-import it.epicode.bwfinalboss.model.User;
+import it.epicode.bwfinalboss.model.Utente;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,9 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
             jwtTool.validateToken(token);
 
             try{
-                User user = jwtTool.getUserFromToken(token);
+                Utente utente = jwtTool.getUserFromToken(token);
 
-                Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,user.getAuthorities());
+                Authentication authentication = new UsernamePasswordAuthenticationToken(utente, null,utente.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }catch(NotFoundException e){
                 throw new UnAuthorizedException("L'utente collegato al token non è stato trovato.");
