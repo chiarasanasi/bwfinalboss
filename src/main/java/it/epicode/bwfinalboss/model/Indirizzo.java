@@ -7,7 +7,7 @@ public class Indirizzo {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private int id;
 
     private String via;
     private String civico;
