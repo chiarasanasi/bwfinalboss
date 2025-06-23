@@ -19,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class Utente implements UserDetails {
     @Id
+    @GeneratedValue
     private int id;
 
     private String email;

@@ -42,16 +42,6 @@ public class UtenteService {
         return "Registrazione completata!";
     }
 
-    public String login(String username, String password) throws NotFoundException, UnAuthorizedException {
-        Utente utente = utenteRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("Utente non trovato."));
-
-        if (!passwordEncoder.matches(password, utente.getPassword())) {
-            throw new UnAuthorizedException("Password errata.");
-        }
-
-        return jwtTool.createToken(utente);
-    }
 
     public Utente getUtenteByUsername(String username) throws NotFoundException {
         return utenteRepository.findByUsername(username)
@@ -66,7 +56,7 @@ public class UtenteService {
                 .orElseThrow(() -> new NotFoundException("Utente con il seguenti id " + id + "non trovato."));
     }
 
-    public Utente saveUser(UtenteDto utenteDto) {
+    public Utente saveUtente(UtenteDto utenteDto) {
         return null;
     }
 }
