@@ -20,14 +20,5 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public  String login(LoginDto loginDto) throws NotFoundException {
-        Utente utente = utenteRepository.findByUsernameAndEmail((loginDto.getUsername()) , loginDto.getEmail()).orElseThrow(()->new NotFoundException("L'utente con questo username/password non esiste."));
-        if((passwordEncoder.matches(loginDto.getPassword(), user.getPassword()))){
 
-
-            return jwtTool.createToken(utente);
-        }else{
-            throw new NotFoundException("L'utente con questo username/password non esiste.");
-        }
-    }
 }

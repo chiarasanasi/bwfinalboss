@@ -25,7 +25,7 @@ public class Utente implements UserDetails {
     private String password;
     private String nome;
     private String cognome;
-    private String avatar;
+    //private String avatar;
 
 
     @JoinTable(

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,7 +63,27 @@ public class UtenteService {
                 .orElseThrow(() -> new NotFoundException("Utente non trovato con email: " + email));
     }
 
-    public Utente saveUser(UtenteDto utenteDto) {
-        return null;
+    public Utente saveUtente(UtenteDto utenteDto) throws AlreadyExistException {
+        if (utenteRepository.existsByEmail(utenteDto.getEmail())) {
+            throw new AlreadyExistException("Email già registrata.");
+        }
+        if (utenteRepository.existsByUsername(utenteDto.getUsername())) {
+            throw new AlreadyExistException("Username già in uso.");
+        }
+//      per convertire se necessario, grazie gpt.  Set<Role> ruoli = utenteDto.getRuoli() != null && !utenteDto.getRuoli().isEmpty()
+//                ? utenteDto.getRuoli().stream().map(Role::valueOf).collect(Collectors.toSet())
+//                : Set.of(Role.USER);
+        // Creazione oggetto Utente
+        Utente utente = new Utente();
+        utente.setEmail(utenteDto.getEmail());
+        utente.setUsername(utenteDto.getUsername());
+        utente.setNome(utenteDto.getNome());
+        utente.setCognome(utenteDto.getCognome());
+        utente.setAvatar(utenteDto.getAvatar());
+        utente.setRuoli(UtenteDto.getRuoli);
+        // parte della password
+
+
+        return utenteRepository.save(utente);
     }
 }
