@@ -7,6 +7,7 @@ import it.epicode.bwfinalboss.model.Utente;
 import it.epicode.bwfinalboss.service.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class JwtTool {
 
     @Autowired
+    @Lazy
     private UtenteService utenteService;
 
     @Value("${jwt.duration}")

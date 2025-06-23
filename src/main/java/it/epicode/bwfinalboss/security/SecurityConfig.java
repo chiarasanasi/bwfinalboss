@@ -36,21 +36,15 @@ public class SecurityConfig {
 
         httpSecurity.cors(Customizer.withDefaults());
 
-        // autenticazione accessibile a tutti
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers("/auth/**").permitAll());
-
-        //get accessibile ad entrambi i role
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.GET, "/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name()));
-
-        // post sui clienti permessa a tutti
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/clienti/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name()));
-
-        //solo admin
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.POST, "/**").hasRole(Role.ADMIN.name()));
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.PUT, "/**").hasRole(Role.ADMIN.name()));
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers(HttpMethod.DELETE, "/**").hasRole(Role.ADMIN.name()));
-
-        httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
+        httpSecurity.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                .requestMatchers(HttpMethod.POST, "/clienti/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                .requestMatchers(HttpMethod.POST, "/**").hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PUT, "/**").hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.DELETE, "/**").hasRole(Role.ADMIN.name())
+                .anyRequest().denyAll()
+        );
 
         return httpSecurity.build();
     }

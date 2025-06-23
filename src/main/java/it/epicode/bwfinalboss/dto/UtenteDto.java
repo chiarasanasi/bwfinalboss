@@ -16,7 +16,7 @@ public class UtenteDto {
     private String password;
     private String nome;
     private String cognome;
-    private String avatar;
+//    private String avatar;
 //    private Set<String> ruoli;
     private Set<Role> ruoli;
 }

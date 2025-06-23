@@ -10,6 +10,8 @@ import it.epicode.bwfinalboss.repository.UtenteRepository;
 import it.epicode.bwfinalboss.security.JwtTool;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,18 +67,16 @@ public class UtenteService {
         if (utenteRepository.existsByUsername(utenteDto.getUsername())) {
             throw new AlreadyExistException("Username già in uso.");
         }
-//      per convertire se necessario, grazie gpt.  Set<Role> ruoli = utenteDto.getRuoli() != null && !utenteDto.getRuoli().isEmpty()
-//                ? utenteDto.getRuoli().stream().map(Role::valueOf).collect(Collectors.toSet())
-//                : Set.of(Role.USER);
         // Creazione oggetto Utente
         Utente utente = new Utente();
         utente.setEmail(utenteDto.getEmail());
         utente.setUsername(utenteDto.getUsername());
+        utente.setPassword(passwordEncoder.encode(utenteDto.getPassword()));
         utente.setNome(utenteDto.getNome());
         utente.setCognome(utenteDto.getCognome());
 //        utente.setAvatar(utenteDto.getAvatar());
-//        utente.setRuoli(UtenteDto.getRuoli);
-        // parte della password
+        utente.setRuoli(utenteDto.getRuoli());
+
 
 
         return utenteRepository.save(utente);
