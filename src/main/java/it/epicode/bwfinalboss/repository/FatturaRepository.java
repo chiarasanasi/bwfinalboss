@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FatturaRepository extends JpaRepository<Fattura, Long> {
+public interface FatturaRepository extends JpaRepository<Fattura, Integer> {
 
-    List<Fattura> findByClienteId(Long clienteId);
+    List<Fattura> findByClienteId(int clienteId);
 
     Optional<Fattura> findByNumero(String numero);
 }

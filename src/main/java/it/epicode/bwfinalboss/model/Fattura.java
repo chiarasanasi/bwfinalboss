@@ -27,7 +27,7 @@ public class Fattura {
     private String stato;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
 }

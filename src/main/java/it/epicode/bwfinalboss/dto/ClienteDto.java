@@ -37,7 +37,7 @@ public class ClienteDto {
     @NotBlank(message = "Telefono contatto è obbligatorio")
     private String telefonoContatto;
     private String logoAziendaleUrl;
-    @NotBlank(message = "Tipo cliente è obbligatorio")
+    @NotNull(message = "Tipo cliente è obbligatorio")
     private TipoCliente tipoCliente;
     // Se vuoi che il client possa inviare o ricevere non solo i dati base del cliente
     // ma anche gli indirizzi collegati, allora devi includere questa lista.

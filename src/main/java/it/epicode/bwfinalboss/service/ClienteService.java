@@ -6,6 +6,7 @@ import it.epicode.bwfinalboss.exception.NotFoundException;
 import it.epicode.bwfinalboss.model.Cliente;
 import it.epicode.bwfinalboss.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +16,9 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @Autowired
-    private Cloudinary cloudinary;
+//    @Autowired
+//    private Cloudinary cloudinary;
+
 
     public Cliente saveCliente(ClienteDto clienteDto) {
 
