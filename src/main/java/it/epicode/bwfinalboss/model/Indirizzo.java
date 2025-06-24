@@ -20,8 +20,8 @@ public class Indirizzo {
     private String localita;
     private String cap;
 
-    @OneToMany
-   // @JoinColumn(name = "comune_id", nullable = false)
+    //@OneToMany
+    //@JoinColumn(name = "comune_id", nullable = false)
    // private Comune comune;
 
     //? comune
