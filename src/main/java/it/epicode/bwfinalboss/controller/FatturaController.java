@@ -28,7 +28,7 @@ public class FatturaController {
     private FatturaService fatturaService;
 
     @PreAuthorize("hasAnyRole('ADMIN')")
-    @PostMapping
+    @PostMapping("")
     public Fattura creaFattura(@RequestBody @Validated FatturaDto fatturaDto, BindingResult bindingResult) throws ValidationException, NotFoundException {
         if (bindingResult.hasErrors()) {
             throw new ValidationException(bindingResult.getAllErrors()

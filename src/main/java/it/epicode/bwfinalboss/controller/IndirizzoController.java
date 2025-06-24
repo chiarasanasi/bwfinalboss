@@ -8,18 +8,19 @@ import it.epicode.bwfinalboss.service.IndirizzoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/indirizzi")
+@RequestMapping("/indirizzi")
 @RequiredArgsConstructor
 public class IndirizzoController {
 
     private final IndirizzoService indirizzoService;
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @PostMapping
-    public ResponseEntity<Indirizzo> creaIndirizzo(@RequestBody IndirizzoDto dto) {
+    @PostMapping("")
+    public ResponseEntity<Indirizzo> creaIndirizzo(@RequestBody @Validated IndirizzoDto dto) {
         Indirizzo nuovoIndirizzo = indirizzoService.creaIndirizzo(dto);
         return ResponseEntity.ok(nuovoIndirizzo);
     }
