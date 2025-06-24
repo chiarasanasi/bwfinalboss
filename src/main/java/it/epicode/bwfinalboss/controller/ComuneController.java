@@ -15,7 +15,7 @@ public class ComuneController {
     private ImportComuniService importComuniService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")  // Solo ADMIN può accedere
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> importaComuni(@RequestParam("file") MultipartFile file) {
         try {
             importComuniService.importaComuni(file);

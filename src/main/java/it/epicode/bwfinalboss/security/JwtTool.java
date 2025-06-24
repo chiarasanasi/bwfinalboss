@@ -58,4 +58,13 @@ public class JwtTool {
         return utenteService.getUtenteById(id);
     }
 
+    public Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+
 }

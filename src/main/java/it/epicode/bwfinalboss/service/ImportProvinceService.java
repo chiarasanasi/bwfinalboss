@@ -37,20 +37,22 @@ public class ImportProvinceService {
                 if (tokens.length < 3) continue;
 
                 String sigla = tokens[0].trim();
-                String regione = tokens[1].trim();
-                String nomeProvincia = tokens[2].trim();
+                String nomeProvincia = tokens[1].trim();
+                String regione = tokens[2].trim();
 
                 Provincia provincia = new Provincia();
                 provincia.setSigla(sigla);
-                provincia.setRegione(regione);
+
                 provincia.setNome(nomeProvincia);
+                provincia.setRegione(regione);
 
                 provinciaRepository.save(provincia);
-                System.out.println("Salvata provincia: " + sigla + " - " + nomeProvincia);
+                System.out.println("Salvata provincia: " + sigla + " - " + regione + " (nome e regione invertiti)");
             }
 
             System.out.println("Province importate con successo.");
         }
     }
+
 }
 

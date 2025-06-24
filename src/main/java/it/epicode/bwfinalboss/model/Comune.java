@@ -13,14 +13,9 @@ public class Comune {
     @GeneratedValue
     private Long id;
 
-    private int cap;
-
     private String nome;
 
     @ManyToOne
     @JoinColumn(name = "provincia_id")
     private Provincia provincia;
-
-    @OneToMany(mappedBy = "comune")
-    private Set<Indirizzo> indirizzi = new HashSet<>();
 }
