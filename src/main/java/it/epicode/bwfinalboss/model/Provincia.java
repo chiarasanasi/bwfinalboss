@@ -1,6 +1,7 @@
 package it.epicode.bwfinalboss.model;
 
 import jakarta.persistence.*;
+import jdk.jfr.Unsigned;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -14,6 +15,7 @@ public class Provincia {
     @GeneratedValue
     private int id;
 
+    @Column(unique = true)
     private String sigla;
     private String nome;
     private String regione;

@@ -29,7 +29,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authorization = request.getHeader("Authorization");
 
-        // Se non c'è token o non inizia con Bearer, lascia passare la richiesta (non autenticata)
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -61,7 +60,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());

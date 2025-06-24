@@ -43,13 +43,19 @@ public class JwtTool {
         Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
                 .build()
-                .parse(token);
+                .parseClaimsJws(token);
     }
 
 
     public Utente getUserFromToken(String token) throws NotFoundException {
-        int id = Integer.parseInt(Jwts.parser().verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes())).build().parseSignedClaims(token).getPayload().getSubject());
+        Claims claims = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(chiaveSegreta.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
 
+        int id = Integer.parseInt(claims.getSubject());
         return utenteService.getUtenteById(id);
     }
+
 }

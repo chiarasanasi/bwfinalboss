@@ -36,7 +36,7 @@ public class Utente implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
     @CollectionTable(
             name = "utente_ruolo",
-            joinColumns = @JoinColumn(name = "utente_id") // deve corrispondere alla @Id
+            joinColumns = @JoinColumn(name = "utente_id")
     )
     @Enumerated(EnumType.STRING)
     @Column(name = "ruolo")

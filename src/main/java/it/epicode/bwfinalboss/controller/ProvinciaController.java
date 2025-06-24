@@ -19,7 +19,7 @@ public class ProvinciaController {
     private ImportProvinceService importProvinceService;
 
     @PostMapping("/import")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> importaProvince(@RequestParam("file") MultipartFile file) {
         try {
             importProvinceService.importaProvince(file);
