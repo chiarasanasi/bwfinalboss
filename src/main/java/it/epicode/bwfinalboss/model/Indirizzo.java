@@ -20,11 +20,9 @@ public class Indirizzo {
     private String localita;
     private String cap;
 
-    //@OneToMany
-    //@JoinColumn(name = "comune_id", nullable = false)
-   // private Comune comune;
-
-    //? comune
+    @ManyToOne
+    @JoinColumn(name = "comune_id")
+    private Comune comune;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)

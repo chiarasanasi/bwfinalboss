@@ -1,8 +1,5 @@
 package it.epicode.bwfinalboss.security;
 
-import it.epicode.bwfinalboss.exception.NotFoundException;
-import it.epicode.bwfinalboss.exception.UnAuthorizedException;
-import it.epicode.bwfinalboss.model.Utente;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +7,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -38,20 +38,24 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             jwtTool.validateToken(token);
-            Utente utente = jwtTool.getUserFromToken(token);
+
+            var claims = jwtTool.getClaims(token);
+
+            String username = claims.get("username", String.class);
+            List<String> ruoli = claims.get("ruoli", List.class);
+
+            var authorities = ruoli.stream()
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    utente,
+                    username,
                     null,
-                    utente.getAuthorities()
+                    authorities
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        } catch (NotFoundException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Utente collegato al token non trovato.");
-            return;
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Token non valido o scaduto.");
@@ -60,9 +64,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         return new AntPathMatcher().match("/auth/**", request.getServletPath());
     }
 }
-

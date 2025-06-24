@@ -13,8 +13,6 @@ public class Comune {
     @GeneratedValue
     private Long id;
 
-    private int cap;
-
     private String nome;
 
     @ManyToOne
