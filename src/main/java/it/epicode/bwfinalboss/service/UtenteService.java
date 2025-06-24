@@ -10,8 +10,11 @@ import it.epicode.bwfinalboss.repository.UtenteRepository;
 import it.epicode.bwfinalboss.security.JwtTool;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Page;
 import org.springframework.context.annotation.Lazy;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -81,4 +84,53 @@ public class UtenteService {
 
         return utenteRepository.save(utente);
     }
+    public Utente updateUtente(int id, UtenteDto utenteDto) throws NotFoundException, AlreadyExistException {
+        Utente utenteEsistente = getUtenteById(id);
+
+
+        if (!utenteEsistente.getEmail().equals(utenteDto.getEmail()) && utenteRepository.existsByEmail(utenteDto.getEmail())) {
+            throw new AlreadyExistException("Email " + utenteDto.getEmail() + " già in uso da un altro utente.");
+        }
+        if (!utenteEsistente.getUsername().equals(utenteDto.getUsername()) && utenteRepository.existsByUsername(utenteDto.getUsername())) {
+            throw new AlreadyExistException("Username " + utenteDto.getUsername() + " già in uso da un altro utente.");
+        }
+
+
+        utenteEsistente.setEmail(utenteDto.getEmail());
+        utenteEsistente.setUsername(utenteDto.getUsername());
+        utenteEsistente.setNome(utenteDto.getNome());
+        utenteEsistente.setCognome(utenteDto.getCognome());
+        // utenteEsistente.setAvatar(utenteDto.getAvatar());
+
+        return utenteRepository.save(utenteEsistente);
+    }
+    public void deleteUtente(int id) throws NotFoundException {
+        Utente utente = getUtenteById(id);
+        utenteRepository.delete(utente);
+    }
+    public Utente addRoleToUtente(int id, Role role) throws NotFoundException {
+        Utente utente = getUtenteById(id);
+        Set<Role> ruoli = utente.getRuoli();
+        if (ruoli == null) {
+            ruoli = new java.util.HashSet<>();
+        }
+        ruoli.add(role);
+        utente.setRuoli(ruoli);
+        return utenteRepository.save(utente);
+    }
+    public Utente removeRoleFromUtente(int id, Role role) throws NotFoundException {
+        Utente utente = getUtenteById(id);
+        Set<Role> ruoli = utente.getRuoli();
+        if (ruoli != null) {
+            ruoli.remove(role);
+            utente.setRuoli(ruoli);
+        }
+        return utenteRepository.save(utente);
+    }
+//    public Utente updateUtenteAvatar(int id, String avatarUrl) throws NotFoundException {
+//        Utente utente = getUtenteById(id);
+//        utente.setAvatar(avatarUrl);
+//        return utenteRepository.save(utente);
+//    }
+
 }
