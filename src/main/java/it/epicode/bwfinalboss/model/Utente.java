@@ -19,29 +19,29 @@ import java.util.Set;
 @AllArgsConstructor
 public class Utente implements UserDetails {
     @Id
+    @GeneratedValue
+    private int id;
+
     private String email;
 
+    @Column(unique = true)
     private String username;
+
     private String password;
     private String nome;
     private String cognome;
-    private String avatar;
+    //private String avatar;
 
 
-    @JoinTable(
-            name = "utente_ruolo",
-            joinColumns = @JoinColumn(name = "utente_email"),
-            inverseJoinColumns = @JoinColumn(name = "ruolo_id")
-    )
-
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
     @CollectionTable(
             name = "utente_ruolo",
-            joinColumns = @JoinColumn(name = "utente_email")
+            joinColumns = @JoinColumn(name = "utente_id") // deve corrispondere alla @Id
     )
+    @Enumerated(EnumType.STRING)
     @Column(name = "ruolo")
     private Set<Role> ruoli = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return ruoli.stream()
@@ -68,5 +68,7 @@ public class Utente implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 
 }

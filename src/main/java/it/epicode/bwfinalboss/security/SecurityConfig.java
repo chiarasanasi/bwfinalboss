@@ -1,5 +1,6 @@
 package it.epicode.bwfinalboss.security;
 
+import it.epicode.bwfinalboss.enumeration.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,16 +36,15 @@ public class SecurityConfig {
 
         httpSecurity.cors(Customizer.withDefaults());
 
-
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/auth/**").permitAll());
-//        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.GET,"/studenti/**").permitAll());
-
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/eventi/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/prenotazioni/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers("/users/**").permitAll());
-        httpSecurity.authorizeHttpRequests(http->http.requestMatchers(HttpMethod.GET).permitAll());
-
-        httpSecurity.authorizeHttpRequests(http->http.anyRequest().denyAll());
+        httpSecurity.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                .requestMatchers(HttpMethod.POST, "/clienti/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                .requestMatchers(HttpMethod.POST, "/**").hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.PUT, "/**").hasRole(Role.ADMIN.name())
+                .requestMatchers(HttpMethod.DELETE, "/**").hasRole(Role.ADMIN.name())
+                .anyRequest().denyAll()
+        );
 
         return httpSecurity.build();
     }

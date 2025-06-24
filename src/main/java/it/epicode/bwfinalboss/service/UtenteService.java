@@ -10,10 +10,13 @@ import it.epicode.bwfinalboss.repository.UtenteRepository;
 import it.epicode.bwfinalboss.security.JwtTool;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,27 +45,40 @@ public class UtenteService {
         return "Registrazione completata!";
     }
 
-    public String login(String username, String password) throws NotFoundException, UnAuthorizedException {
-        Utente utente = utenteRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("Utente non trovato."));
-
-        if (!passwordEncoder.matches(password, utente.getPassword())) {
-            throw new UnAuthorizedException("Password errata.");
-        }
-
-        return jwtTool.createToken(utente);
-    }
 
     public Utente getUtenteByUsername(String username) throws NotFoundException {
         return utenteRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("Utente non trovato."));
     }
     public Utente getUtenteByEmail(String email) throws NotFoundException {
-        return utenteRepository.findById(email)
+        return utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Utente non trovato con email: " + email));
     }
+    public Utente getUtenteById(int id) throws NotFoundException {
+        return utenteRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Utente con il seguenti id " + id + "non trovato."));
+    }
 
-    public Utente saveUser(UtenteDto utenteDto) {
-        return null;
+
+    public Utente saveUtente(UtenteDto utenteDto) throws AlreadyExistException {
+        if (utenteRepository.existsByEmail(utenteDto.getEmail())) {
+            throw new AlreadyExistException("Email già registrata.");
+        }
+        if (utenteRepository.existsByUsername(utenteDto.getUsername())) {
+            throw new AlreadyExistException("Username già in uso.");
+        }
+        // Creazione oggetto Utente
+        Utente utente = new Utente();
+        utente.setEmail(utenteDto.getEmail());
+        utente.setUsername(utenteDto.getUsername());
+        utente.setPassword(passwordEncoder.encode(utenteDto.getPassword()));
+        utente.setNome(utenteDto.getNome());
+        utente.setCognome(utenteDto.getCognome());
+//        utente.setAvatar(utenteDto.getAvatar());
+        utente.setRuoli(utenteDto.getRuoli());
+
+
+
+        return utenteRepository.save(utente);
     }
 }
