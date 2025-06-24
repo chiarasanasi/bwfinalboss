@@ -28,7 +28,7 @@ public class AuthController {
         if(bindingResult.hasErrors()){
             throw new ValidationException(bindingResult.getAllErrors().stream().map(objectError -> objectError.getDefaultMessage()).reduce("",(s, e)->s+e));
         }
-        return  utenteService.saveUser(utenteDto);
+        return  utenteService.saveUtente(utenteDto);
     }
 
     @GetMapping("/auth/login")
