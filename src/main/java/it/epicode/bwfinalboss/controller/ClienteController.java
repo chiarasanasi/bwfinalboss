@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,6 +23,7 @@ import java.util.List;
 public class ClienteController {
     @Autowired
     private ClienteService clienteService;
+
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
@@ -68,4 +70,40 @@ public class ClienteController {
     public void deleteCliente(@PathVariable int id) throws NotFoundException {
         clienteService.deleteCliente(id);
     }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/ordinati")
+    public List<Cliente> getClientiOrdinati(@RequestParam String criterio) {
+        return clienteService.getClientiOrdinatiPer(criterio);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/filtro/fatturato")
+    public List<Cliente> filtraPerFatturato(@RequestParam int min, @RequestParam int max) {
+        return clienteService.filtraPerFatturato(min, max);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/filtro/data-inserimento")
+    public List<Cliente> filtraPerDataInserimento(
+            @RequestParam String start,
+            @RequestParam String end
+    ) {
+        return clienteService.filtraPerDataInserimento(LocalDate.parse(start), LocalDate.parse(end));
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/filtro/ultimo-contatto")
+    public List<Cliente> filtraPerUltimoContatto(@RequestParam LocalDate start,
+                                                 @RequestParam LocalDate end) {
+        return clienteService.filtraPerUltimoContatto(start, end);
+    }
+
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/filtro/nome")
+    public List<Cliente> filtraPerNome(@RequestParam String nome) {
+        return clienteService.filtraPerNome(nome);
+    }
+
+
 }

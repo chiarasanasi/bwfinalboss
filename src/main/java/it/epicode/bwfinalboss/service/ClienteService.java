@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -109,4 +110,32 @@ public class ClienteService {
         Cliente cliente = findById(id);
         clienteRepository.delete(cliente);
     }
+
+    public List<Cliente> getClientiOrdinatiPer(String criterio) {
+        return switch (criterio.toLowerCase()) {
+            case "nome" -> clienteRepository.findAllByOrderByRagioneSocialeAsc();
+            case "fatturato" -> clienteRepository.findAllByOrderByFatturatoAnnualeDesc();
+            case "data_inserimento" -> clienteRepository.findAllByOrderByDataInserimentoAsc();
+            case "ultimo_contatto" -> clienteRepository.findAllByOrderByDataUltimoContattoDesc();
+            default -> throw new IllegalArgumentException("Criterio di ordinamento non valido: " + criterio);
+        };
+    }
+
+    public List<Cliente> filtraPerFatturato(int min, int max) {
+        return clienteRepository.findByFatturatoAnnualeBetween(min, max);
+    }
+
+    public List<Cliente> filtraPerDataInserimento(LocalDate start, LocalDate end) {
+        return clienteRepository.findByDataInserimentoBetween(start, end);
+    }
+
+    public List<Cliente> filtraPerUltimoContatto(LocalDate start, LocalDate end) {
+        return clienteRepository.findByDataUltimoContattoBetween(start, end);
+    }
+
+    public List<Cliente> filtraPerNome(String nomeParziale) {
+        return clienteRepository.findByRagioneSocialeContainingIgnoreCase(nomeParziale);
+    }
+
+
 }
