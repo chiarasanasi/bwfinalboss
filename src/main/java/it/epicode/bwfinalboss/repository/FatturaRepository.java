@@ -1,4 +1,16 @@
 package it.epicode.bwfinalboss.repository;
 
-public interface FatturaRepository {
+import it.epicode.bwfinalboss.model.Fattura;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface FatturaRepository extends JpaRepository<Fattura, Integer> {
+
+    List<Fattura> findByClienteId(int clienteId);
+
+    Optional<Fattura> findByNumero(String numero);
 }
