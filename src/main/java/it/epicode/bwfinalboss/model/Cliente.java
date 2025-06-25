@@ -38,10 +38,10 @@ public class Cliente {
     private String logoAziendaleUrl;
     @Enumerated(EnumType.STRING)
     private TipoCliente tipoCliente;
-
     @OneToMany(mappedBy = "cliente")
     @JsonIgnore
     private List<Fattura> fatture;
     @OneToMany(mappedBy = "cliente")
     private List<Indirizzo> indirizzi;
+    private String sedeLegaleProvincia;
 }
