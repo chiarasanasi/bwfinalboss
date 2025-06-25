@@ -30,6 +30,9 @@ public class ClienteService {
     @Autowired
     private ProvinciaRepository provinciaRepository;
 
+    @Autowired
+    private EmailService emailService;
+
 
     public Cliente saveCliente(ClienteDto clienteDto) {
 
@@ -79,8 +82,7 @@ public class ClienteService {
         }
 
         Cliente savedCliente = clienteRepository.save(cliente);
-        System.out.println("Indirizzi salvati: " + savedCliente.getIndirizzi().size());
-
+        emailService.inviaBenvenuto(savedCliente);
         return savedCliente;
     }
 
