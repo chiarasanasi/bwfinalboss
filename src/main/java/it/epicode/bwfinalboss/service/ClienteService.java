@@ -136,6 +136,8 @@ public class ClienteService {
     public List<Cliente> filtraPerNome(String nomeParziale) {
         return clienteRepository.findByRagioneSocialeContainingIgnoreCase(nomeParziale);
     }
-
+    public List<Cliente> getClientiOrdinatiPerProvincia() {
+        return clienteRepository.findAllByOrderBySedeLegaleProvinciaAsc();
+    }
 
 }
