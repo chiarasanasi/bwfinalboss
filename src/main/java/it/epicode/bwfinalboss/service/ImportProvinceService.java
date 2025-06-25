@@ -23,17 +23,15 @@ public class ImportProvinceService {
             String line;
             boolean isFirstLine = true;
 
-            while ((line = reader.readLine()) != null) {
-                System.out.println("Linea letta: " + line);
+            int counter = 1;
 
+            while ((line = reader.readLine()) != null) {
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
 
                 String[] tokens = line.split(";");
-                System.out.println("Tokens: " + java.util.Arrays.toString(tokens));
-
                 if (tokens.length < 3) continue;
 
                 String sigla = tokens[0].trim();
@@ -42,17 +40,17 @@ public class ImportProvinceService {
 
                 Provincia provincia = new Provincia();
                 provincia.setSigla(sigla);
-
                 provincia.setNome(nomeProvincia);
                 provincia.setRegione(regione);
 
-                provinciaRepository.save(provincia);
-                System.out.println("Salvata provincia: " + sigla + " - " + regione + " (nome e regione invertiti)");
-            }
+                provincia.setCodiceProvincia(String.format("%03d", counter++));
 
-            System.out.println("Province importate con successo.");
+                provinciaRepository.save(provincia);
+                System.out.println("✅ Salvata provincia: " + nomeProvincia + " (" + sigla + ")");
+            }
+            System.out.println("🎉 Importazione province completata con successo.");
         }
     }
-
 }
+
 

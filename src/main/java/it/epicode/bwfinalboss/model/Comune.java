@@ -19,6 +19,4 @@ public class Comune {
     @JoinColumn(name = "provincia_id")
     private Provincia provincia;
 
-//    @OneToMany(mappedBy = "comune")
-//    private Set<Indirizzo> indirizzi = new HashSet<>();
 }
