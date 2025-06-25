@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ImportComuniService {
@@ -27,10 +29,10 @@ public class ImportComuniService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             boolean isFirstLine = true;
+            List<String> comuniSaltati = new ArrayList<>();
 
             while ((line = reader.readLine()) != null) {
                 line = line.replace("\uFEFF", "");
-                System.out.println("Linea letta: " + line);
 
                 if (isFirstLine) {
                     isFirstLine = false;
@@ -38,15 +40,12 @@ public class ImportComuniService {
                 }
 
                 String[] tokens = line.split(";");
-                System.out.println("Tokens: " + java.util.Arrays.toString(tokens));
-
                 if (tokens.length < 4) continue;
 
                 String codiceProvincia = tokens[0].trim();
                 String nomeComune = tokens[2].trim();
-                String nomeProvincia = tokens[3].trim();
 
-                Provincia provincia = provinciaRepository.findByNome(nomeProvincia).orElse(null);
+                Provincia provincia = provinciaRepository.findByCodiceProvincia(codiceProvincia).orElse(null);
 
                 if (provincia != null) {
                     Comune comune = new Comune();
@@ -54,13 +53,19 @@ public class ImportComuniService {
                     comune.setProvincia(provincia);
 
                     comuneRepository.save(comune);
-                    System.out.println("Salvato comune: " + nomeComune + " (Provincia: " + nomeProvincia + ")");
                 } else {
-                    System.out.println("Provincia non trovata per nome: " + nomeProvincia + ", comune: " + nomeComune);
+                    comuniSaltati.add(nomeComune + " (codice provincia: " + codiceProvincia + ")");
                 }
             }
-            System.out.println("Comuni importati con successo.");
+
+            if (!comuniSaltati.isEmpty()) {
+                System.out.println("⚠️ Comuni NON importati:");
+                comuniSaltati.forEach(System.out::println);
+            } else {
+                System.out.println("✅ Tutti i comuni importati correttamente.");
+            }
         }
     }
 }
+
 

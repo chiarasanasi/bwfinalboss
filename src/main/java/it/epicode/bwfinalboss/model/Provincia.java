@@ -14,12 +14,14 @@ public class Provincia {
     @GeneratedValue
     private int id;
 
-    @Column(unique = true)
     private String sigla;
 
     private String nome;
 
     private String regione;
+
+    @Column(name = "codice_provincia", unique = true)
+    private String codiceProvincia;
 
     @OneToMany(mappedBy = "provincia", cascade = CascadeType.ALL)
     private Set<Comune> comuni = new HashSet<>();
