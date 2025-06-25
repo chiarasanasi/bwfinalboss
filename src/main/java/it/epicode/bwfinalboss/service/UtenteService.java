@@ -58,7 +58,7 @@ public class UtenteService {
         utente.setPassword(passwordEncoder.encode(utenteDto.getPassword()));
         utente.setNome(utenteDto.getNome());
         utente.setCognome(utenteDto.getCognome());
-//        utente.setAvatar(utenteDto.getAvatar());
+        utente.setAvatar("https://ui-avatars.com/api/?name=" + utenteDto.getNome()+ "+" + utenteDto.getCognome());
 
         if (utente.getRuoli() == null || utente.getRuoli().isEmpty()) {
             utente.setRuoli(Set.of(Role.USER));
@@ -110,10 +110,10 @@ public class UtenteService {
         }
         return utenteRepository.save(utente);
     }
-//    public Utente updateUtenteAvatar(int id, String avatarUrl) throws NotFoundException {
-//        Utente utente = getUtenteById(id);
-//        utente.setAvatar(avatarUrl);
-//        return utenteRepository.save(utente);
-//    }
+    public Utente updateUtenteAvatar(int id, String avatarUrl) throws NotFoundException {
+        Utente utente = getUtenteById(id);
+        utente.setAvatar(avatarUrl);
+        return utenteRepository.save(utente);
+    }
 
 }
