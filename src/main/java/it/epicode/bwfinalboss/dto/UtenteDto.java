@@ -19,5 +19,5 @@ public class UtenteDto {
 
 //    private String avatar;
 //    private Set<String> ruoli;
-    private Set<Role> ruoli;
+//    private Set<Role> ruoli;
 }

@@ -30,25 +30,6 @@ public class UtenteService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTool jwtTool;
 
-    public String register(Utente utente) throws AlreadyExistException {
-        if (utenteRepository.existsByEmail(utente.getEmail())) {
-            throw new AlreadyExistException("Email già registrata.");
-        }
-        if (utenteRepository.existsByUsername(utente.getUsername())) {
-            throw new AlreadyExistException("Username già in uso.");
-        }
-
-        utente.setPassword(passwordEncoder.encode(utente.getPassword()));
-
-        if (utente.getRuoli() == null || utente.getRuoli().isEmpty()) {
-            utente.setRuoli(Set.of(Role.USER));
-        }
-
-        utenteRepository.save(utente);
-        return "Registrazione completata!";
-    }
-
-
     public Utente getUtenteByUsername(String username) throws NotFoundException {
         return utenteRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("Utente non trovato."));
@@ -78,8 +59,10 @@ public class UtenteService {
         utente.setNome(utenteDto.getNome());
         utente.setCognome(utenteDto.getCognome());
 //        utente.setAvatar(utenteDto.getAvatar());
-        utente.setRuoli(utenteDto.getRuoli());
 
+        if (utente.getRuoli() == null || utente.getRuoli().isEmpty()) {
+            utente.setRuoli(Set.of(Role.USER));
+        }
 
 
         return utenteRepository.save(utente);
