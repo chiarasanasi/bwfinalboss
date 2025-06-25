@@ -59,7 +59,7 @@ public class UtenteService {
         utente.setPassword(passwordEncoder.encode(utenteDto.getPassword()));
         utente.setNome(utenteDto.getNome());
         utente.setCognome(utenteDto.getCognome());
-//        utente.setAvatar(utenteDto.getAvatar());
+        utente.setAvatar("https://ui-avatars.com/api/?name=" + utenteDto.getNome()+ "+" + utenteDto.getCognome());
 
         if (utente.getRuoli() == null || utente.getRuoli().isEmpty()) {
             utente.setRuoli(Set.of(Role.USER));
