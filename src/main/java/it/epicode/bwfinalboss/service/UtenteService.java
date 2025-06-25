@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -115,5 +116,17 @@ public class UtenteService {
         utente.setAvatar(avatarUrl);
         return utenteRepository.save(utente);
     }
+
+    public Utente aggiornaRuoli(int id, Set<Role> nuoviRuoli) throws NotFoundException {
+        Utente utente = getUtenteById(id);
+        utente.setRuoli(nuoviRuoli);
+        return utenteRepository.save(utente);
+    }
+
+
+    public List<Utente> getAll() {
+        return utenteRepository.findAll();
+    }
+
 
 }
