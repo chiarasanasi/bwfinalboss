@@ -1,15 +1,22 @@
 package it.epicode.bwfinalboss.service;
 
-import com.cloudinary.Cloudinary;
 import it.epicode.bwfinalboss.dto.ClienteDto;
+import it.epicode.bwfinalboss.dto.IndirizzoDto;
 import it.epicode.bwfinalboss.exception.NotFoundException;
 import it.epicode.bwfinalboss.model.Cliente;
+import it.epicode.bwfinalboss.model.Comune;
+import it.epicode.bwfinalboss.model.Indirizzo;
+import it.epicode.bwfinalboss.model.Provincia;
 import it.epicode.bwfinalboss.repository.ClienteRepository;
+import it.epicode.bwfinalboss.repository.ComuneRepository;
+import it.epicode.bwfinalboss.repository.ProvinciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,8 +24,11 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-//    @Autowired
-//    private Cloudinary cloudinary;
+    @Autowired
+    private ComuneRepository comuneRepository;
+
+    @Autowired
+    private ProvinciaRepository provinciaRepository;
 
 
     public Cliente saveCliente(ClienteDto clienteDto) {
@@ -36,27 +46,44 @@ public class ClienteService {
         cliente.setNomeContatto(clienteDto.getNomeContatto());
         cliente.setCognomeContatto(clienteDto.getCognomeContatto());
         cliente.setTelefonoContatto(clienteDto.getTelefonoContatto());
-        cliente.setLogoAziendaleUrl(clienteDto.getLogoAziendaleUrl());
+        String ragioneSocialeEnc = URLEncoder.encode(cliente.getRagioneSociale(), StandardCharsets.UTF_8);
+        cliente.setLogoAziendaleUrl("https://ui-avatars.com/api/?name=" + ragioneSocialeEnc);
+
         cliente.setTipoCliente(clienteDto.getTipoCliente());
 
-//        if (clienteDto.getIndirizzi() != null) {
-//            List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream()
-//                    .map(iDto -> {
-//                        Indirizzo ind = new Indirizzo();
-//                        ind.setVia(iDto.getVia());
-//                        ind.setCivico(iDto.getCivico());
-//                        ind.setLocalita(iDto.getLocalita());
-//                        ind.setCap(iDto.getCap());
-//                        ind.setComune(iDto.getComune());
-//                        ind.setTipo(iDto.getTipo());
-//                        ind.setCliente(cliente);
-//                        return ind;
-//                    }).toList();
-//            cliente.setIndirizzi(indirizzi);
-//        }
+        if (clienteDto.getIndirizzi() != null && !clienteDto.getIndirizzi().isEmpty()) {
+            List<Indirizzo> indirizzi = new ArrayList<>();
 
-        return clienteRepository.save(cliente);
+            for (IndirizzoDto indDto : clienteDto.getIndirizzi()) {
+                Indirizzo ind = new Indirizzo();
+                ind.setVia(indDto.getVia());
+                ind.setCivico(indDto.getCivico());
+                ind.setLocalita(indDto.getLocalita());
+                ind.setCap(indDto.getCap());
+                ind.setTipo(indDto.getTipo());
+
+                Provincia provincia = provinciaRepository.findBySigla(indDto.getProvinciaSigla())
+                        .orElseThrow(() -> new RuntimeException("Provincia non trovata: " + indDto.getProvinciaSigla()));
+
+                Comune comune = comuneRepository.findByNomeAndProvincia(indDto.getComune(), provincia)
+                        .orElseThrow(() -> new RuntimeException("Comune non trovato: " + indDto.getComune() + " in provincia " + indDto.getProvinciaSigla()));
+
+                ind.setComune(comune);
+
+                ind.setCliente(cliente);
+
+                indirizzi.add(ind);
+            }
+
+            cliente.setIndirizzi(indirizzi);
+        }
+
+        Cliente savedCliente = clienteRepository.save(cliente);
+        System.out.println("Indirizzi salvati: " + savedCliente.getIndirizzi().size());
+
+        return savedCliente;
     }
+
 
     public List<Cliente> findAll() {
         return clienteRepository.findAll();
@@ -67,8 +94,9 @@ public class ClienteService {
                 .orElseThrow(() -> new NotFoundException("Cliente non trovato con id " + id));
     }
 
-    public Cliente updateCliente(int id, ClienteDto clienteDto) throws NotFoundException {
-        Cliente cliente = findById(id);
+    public Cliente updateCliente(int id, ClienteDto clienteDto) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente non trovato con id: " + id));
 
         cliente.setRagioneSociale(clienteDto.getRagioneSociale());
         cliente.setPartitaIva(clienteDto.getPartitaIva());
@@ -85,26 +113,36 @@ public class ClienteService {
         cliente.setLogoAziendaleUrl(clienteDto.getLogoAziendaleUrl());
         cliente.setTipoCliente(clienteDto.getTipoCliente());
 
-//        if (clienteDto.getIndirizzi() != null) {
-//            cliente.getIndirizzi().clear();
-//            List<Indirizzo> indirizzi = clienteDto.getIndirizzi().stream()
-//                    .map(iDto -> {
-//                        Indirizzo ind = new Indirizzo();
-//                        ind.setVia(iDto.getVia());
-//                        ind.setCivico(iDto.getCivico());
-//                        ind.setLocalita(iDto.getLocalita());
-//                        ind.setCap(iDto.getCap());
-//                        ind.setComune(iDto.getComune());
-//                        ind.setTipo(iDto.getTipo());
-//                        ind.setCliente(cliente);
-//                        return ind;
-//                    })
-//                    .collect(Collectors.toList());
-//            cliente.setIndirizzi(indirizzi);
-//        }
+        if (clienteDto.getIndirizzi() != null && !clienteDto.getIndirizzi().isEmpty()) {
+            List<Indirizzo> indirizzi = new ArrayList<>();
+            for (IndirizzoDto indDto : clienteDto.getIndirizzi()) {
+                Indirizzo ind = new Indirizzo();
+                ind.setVia(indDto.getVia());
+                ind.setCivico(indDto.getCivico());
+                ind.setLocalita(indDto.getLocalita());
+                ind.setCap(indDto.getCap());
+                ind.setTipo(indDto.getTipo());
+
+                Provincia provincia = provinciaRepository.findBySigla(indDto.getProvinciaSigla())
+                        .orElseThrow(() -> new RuntimeException("Provincia non trovata: " + indDto.getProvinciaSigla()));
+
+                Comune comune = comuneRepository.findByNomeAndProvincia(indDto.getComune(), provincia)
+                        .orElseThrow(() -> new RuntimeException("Comune non trovato: " + indDto.getComune() + " in provincia " + indDto.getProvinciaSigla()));
+
+                ind.setComune(comune);
+                ind.setCliente(cliente);
+                indirizzi.add(ind);
+            }
+            cliente.setIndirizzi(indirizzi);
+        } else {
+
+            cliente.getIndirizzi().clear();
+        }
 
         return clienteRepository.save(cliente);
     }
+
+
 
     public void deleteCliente(int id) throws NotFoundException {
         Cliente cliente = findById(id);

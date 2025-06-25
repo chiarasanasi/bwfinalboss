@@ -1,11 +1,13 @@
 package it.epicode.bwfinalboss.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import it.epicode.bwfinalboss.enumeration.TipoCliente;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +44,7 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente")
     @JsonIgnore
     private List<Fattura> fatture;
-    @OneToMany(mappedBy = "cliente")
-    private List<Indirizzo> indirizzi;
+    @OneToMany(mappedBy = "cliente",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Indirizzo> indirizzi = new ArrayList<>();
 }

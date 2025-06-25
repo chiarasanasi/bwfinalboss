@@ -1,6 +1,7 @@
 package it.epicode.bwfinalboss.dto;
 
 
+import it.epicode.bwfinalboss.enumeration.TipoIndirizzo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -18,6 +19,10 @@ public class IndirizzoDto {
     private String localita;
     @NotBlank(message = "cap è obbligatoria")
     private String cap;
+    private TipoIndirizzo tipo;
+    private int comuneId;
+    private String provinciaSigla;
+    private String comune;
    // private Long comuneId;
     //private Long clienteId;
 }
