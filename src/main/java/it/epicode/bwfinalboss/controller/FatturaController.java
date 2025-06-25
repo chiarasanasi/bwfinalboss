@@ -17,7 +17,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -63,25 +62,12 @@ public class FatturaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/data")
-    public ResponseEntity<List<Fattura>> getFattureByData(@RequestParam("data") String data) {
-        LocalDate parsedDate = LocalDate.parse(data);
-        return ResponseEntity.ok(fatturaService.getFattureByData(parsedDate));
-    }
-
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/anno")
-    public ResponseEntity<List<Fattura>> getFattureByAnno(@RequestParam("anno") int anno) {
-        return ResponseEntity.ok(fatturaService.getFattureByAnno(anno));
-    }
-
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/importo")
-    public ResponseEntity<List<Fattura>> getFattureByImportoRange(
-            @RequestParam("min") int min,
-            @RequestParam("max") int max) {
-        return ResponseEntity.ok(fatturaService.getFattureByImportoRange(min, max));
+    @GetMapping("/filtro")
+    public List<Fattura> filtraFatture(
+            @RequestParam(required = false) Integer clienteId,
+            @RequestParam(required = false) String stato
+    ) {
+        return fatturaService.filtraFatture(clienteId, stato);
     }
 }

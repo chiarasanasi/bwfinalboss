@@ -3,6 +3,7 @@ package it.epicode.bwfinalboss.controller;
 import it.epicode.bwfinalboss.dto.ClienteDto;
 import it.epicode.bwfinalboss.exception.NotFoundException;
 import it.epicode.bwfinalboss.model.Cliente;
+import it.epicode.bwfinalboss.model.Fattura;
 import it.epicode.bwfinalboss.service.ClienteService;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -28,15 +29,15 @@ public class ClienteController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cliente createCliente(@RequestBody @Validated ClienteDto clienteDto, BindingResult bindingResult) throws ValidationException{
-         if (bindingResult.hasErrors()) {
-        throw new ValidationException(bindingResult.getAllErrors()
-                .stream()
-                .map(e -> e.getDefaultMessage())
-                .reduce("", (s1, s2) -> s1 + " " + s2));
-    }
+    public Cliente createCliente(@RequestBody @Validated ClienteDto clienteDto, BindingResult bindingResult) throws ValidationException {
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(bindingResult.getAllErrors()
+                    .stream()
+                    .map(e -> e.getDefaultMessage())
+                    .reduce("", (s1, s2) -> s1 + " " + s2));
+        }
         return clienteService.saveCliente(clienteDto);
-  }
+    }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
@@ -105,7 +106,9 @@ public class ClienteController {
         return clienteService.filtraPerNome(nome);
     }
 
-
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/ordinati-provincia")
+    public List<Cliente> getClientiOrdinatiPerProvincia() {
+        return clienteService.getClientiOrdinatiPerProvincia();
+    }
 }
-
-
