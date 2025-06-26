@@ -105,7 +105,11 @@ public class ClienteController {
         return clienteService.filtraPerNome(nome);
     }
 
-
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/ordinati-provincia")
+    public List<Cliente> getClientiOrdinatiPerProvincia() {
+        return clienteService.getClientiOrdinatiPerProvincia();
+    }
 }
 
 
