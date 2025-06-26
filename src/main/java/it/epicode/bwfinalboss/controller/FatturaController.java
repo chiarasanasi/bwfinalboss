@@ -84,4 +84,13 @@ public class FatturaController {
             @RequestParam("max") int max) {
         return ResponseEntity.ok(fatturaService.getFattureByImportoRange(min, max));
     }
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/filtro")
+    public List<Fattura> filtraFatture(
+            @RequestParam(required = false) Integer clienteId,
+            @RequestParam(required = false) String stato
+    ) {
+        return fatturaService.filtraFatture(clienteId, stato);
+    }
+
 }
