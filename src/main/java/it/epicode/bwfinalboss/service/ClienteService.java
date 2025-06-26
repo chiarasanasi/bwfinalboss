@@ -1,12 +1,9 @@
 package it.epicode.bwfinalboss.service;
 
 import it.epicode.bwfinalboss.dto.ClienteDto;
-import it.epicode.bwfinalboss.dto.IndirizzoDto;
 import it.epicode.bwfinalboss.exception.NotFoundException;
 import it.epicode.bwfinalboss.model.Cliente;
-import it.epicode.bwfinalboss.model.Comune;
 import it.epicode.bwfinalboss.model.Indirizzo;
-import it.epicode.bwfinalboss.model.Provincia;
 import it.epicode.bwfinalboss.repository.ClienteRepository;
 import it.epicode.bwfinalboss.repository.ComuneRepository;
 import it.epicode.bwfinalboss.repository.ProvinciaRepository;
@@ -18,9 +15,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteService {
+
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -33,9 +32,7 @@ public class ClienteService {
     @Autowired
     private EmailService emailService;
 
-
     public Cliente saveCliente(ClienteDto clienteDto) {
-
         Cliente cliente = new Cliente();
         cliente.setRagioneSociale(clienteDto.getRagioneSociale());
         cliente.setPartitaIva(clienteDto.getPartitaIva());
@@ -49,51 +46,32 @@ public class ClienteService {
         cliente.setNomeContatto(clienteDto.getNomeContatto());
         cliente.setCognomeContatto(clienteDto.getCognomeContatto());
         cliente.setTelefonoContatto(clienteDto.getTelefonoContatto());
+
         String ragioneSocialeEnc = URLEncoder.encode(cliente.getRagioneSociale(), StandardCharsets.UTF_8);
         cliente.setLogoAziendaleUrl("https://ui-avatars.com/api/?name=" + ragioneSocialeEnc);
 
         cliente.setTipoCliente(clienteDto.getTipoCliente());
 
-        if (clienteDto.getIndirizzi() != null && !clienteDto.getIndirizzi().isEmpty()) {
-            List<Indirizzo> indirizzi = new ArrayList<>();
-
-            for (IndirizzoDto indDto : clienteDto.getIndirizzi()) {
-                Indirizzo ind = new Indirizzo();
-                ind.setVia(indDto.getVia());
-                ind.setCivico(indDto.getCivico());
-                ind.setLocalita(indDto.getLocalita());
-                ind.setCap(indDto.getCap());
-                ind.setTipo(indDto.getTipo());
-
-                Provincia provincia = provinciaRepository.findBySigla(indDto.getProvinciaSigla())
-                        .orElseThrow(() -> new RuntimeException("Provincia non trovata: " + indDto.getProvinciaSigla()));
-
-                Comune comune = comuneRepository.findByNomeAndProvincia(indDto.getComune(), provincia)
-                        .orElseThrow(() -> new RuntimeException("Comune non trovato: " + indDto.getComune() + " in provincia " + indDto.getProvinciaSigla()));
-
-                ind.setComune(comune);
-
-                ind.setCliente(cliente);
-
-                indirizzi.add(ind);
-            }
-
-            cliente.setIndirizzi(indirizzi);
-        }
-
         Cliente savedCliente = clienteRepository.save(cliente);
         emailService.inviaBenvenuto(savedCliente);
+
+
         return savedCliente;
     }
 
-
     public List<Cliente> findAll() {
-        return clienteRepository.findAll();
+        List<Cliente> clienti = clienteRepository.findAll();
+        for (Cliente c : clienti) {
+            c.setIndirizzi(new ArrayList<>(c.getIndirizzi()));
+        }
+        return clienti;
     }
 
     public Cliente findById(int id) throws NotFoundException {
-        return clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cliente non trovato con id " + id));
+        cliente.setIndirizzi(new ArrayList<>(cliente.getIndirizzi()));
+        return cliente;
     }
 
     public Cliente updateCliente(int id, ClienteDto clienteDto) {
@@ -115,36 +93,10 @@ public class ClienteService {
         cliente.setLogoAziendaleUrl(clienteDto.getLogoAziendaleUrl());
         cliente.setTipoCliente(clienteDto.getTipoCliente());
 
-        if (clienteDto.getIndirizzi() != null && !clienteDto.getIndirizzi().isEmpty()) {
-            List<Indirizzo> indirizzi = new ArrayList<>();
-            for (IndirizzoDto indDto : clienteDto.getIndirizzi()) {
-                Indirizzo ind = new Indirizzo();
-                ind.setVia(indDto.getVia());
-                ind.setCivico(indDto.getCivico());
-                ind.setLocalita(indDto.getLocalita());
-                ind.setCap(indDto.getCap());
-                ind.setTipo(indDto.getTipo());
-
-                Provincia provincia = provinciaRepository.findBySigla(indDto.getProvinciaSigla())
-                        .orElseThrow(() -> new RuntimeException("Provincia non trovata: " + indDto.getProvinciaSigla()));
-
-                Comune comune = comuneRepository.findByNomeAndProvincia(indDto.getComune(), provincia)
-                        .orElseThrow(() -> new RuntimeException("Comune non trovato: " + indDto.getComune() + " in provincia " + indDto.getProvinciaSigla()));
-
-                ind.setComune(comune);
-                ind.setCliente(cliente);
-                indirizzi.add(ind);
-            }
-            cliente.setIndirizzi(indirizzi);
-        } else {
-
-            cliente.getIndirizzi().clear();
-        }
-
-        return clienteRepository.save(cliente);
+        Cliente updatedCliente = clienteRepository.save(cliente);
+        updatedCliente.setIndirizzi(new ArrayList<>(updatedCliente.getIndirizzi()));
+        return updatedCliente;
     }
-
-
 
     public void deleteCliente(int id) throws NotFoundException {
         Cliente cliente = findById(id);
@@ -176,6 +128,4 @@ public class ClienteService {
     public List<Cliente> filtraPerNome(String nomeParziale) {
         return clienteRepository.findByRagioneSocialeContainingIgnoreCase(nomeParziale);
     }
-
-
 }

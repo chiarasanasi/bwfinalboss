@@ -21,8 +21,5 @@ public class IndirizzoDto {
     private String cap;
     private TipoIndirizzo tipo;
     private int comuneId;
-    private String provinciaSigla;
-    private String comune;
-   // private Long comuneId;
-    //private Long clienteId;
+    private int clienteId;
 }

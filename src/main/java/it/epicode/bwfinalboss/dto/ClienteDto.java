@@ -1,6 +1,7 @@
 package it.epicode.bwfinalboss.dto;
 
 import it.epicode.bwfinalboss.enumeration.TipoCliente;
+import it.epicode.bwfinalboss.model.Provincia;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +40,5 @@ public class ClienteDto {
     private String logoAziendaleUrl;
     @NotNull(message = "Tipo cliente è obbligatorio")
     private TipoCliente tipoCliente;
-    // Se vuoi che il client possa inviare o ricevere non solo i dati base del cliente
-    // ma anche gli indirizzi collegati, allora devi includere questa lista.
     private List<IndirizzoDto> indirizzi;
 }

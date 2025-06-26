@@ -32,7 +32,7 @@ public class Indirizzo {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private Cliente cliente;
 }
 
