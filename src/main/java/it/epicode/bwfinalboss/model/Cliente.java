@@ -40,7 +40,7 @@ public class Cliente {
     private String logoAziendaleUrl;
     @Enumerated(EnumType.STRING)
     private TipoCliente tipoCliente;
-
+    private String sedeLegaleProvincia;
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Fattura> fatture;
