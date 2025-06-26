@@ -1,5 +1,6 @@
 package it.epicode.bwfinalboss.security;
 
+import it.epicode.bwfinalboss.model.Utente;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,10 +48,13 @@ public class JwtFilter extends OncePerRequestFilter {
             var authorities = ruoli.stream()
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
+
+            Utente utente = jwtTool.getUserFromToken(token);
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    username,
+                    utente,
                     null,
-                    authorities
+                    utente.getAuthorities()
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
