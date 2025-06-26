@@ -76,4 +76,17 @@ public class FatturaService {
     public List<Fattura> getFattureByImportoRange(int min, int max) {
         return fatturaRepository.findByImportoBetween(min, max);
     }
+
+    public List<Fattura> filtraFatture(Integer clienteId, String stato) {
+        if (clienteId != null && stato != null) {
+            return fatturaRepository.findByClienteIdAndStato(clienteId, stato);
+        } else if (clienteId != null) {
+            return fatturaRepository.findByClienteId(clienteId);
+        } else if (stato != null) {
+            return fatturaRepository.findByStato(stato);
+        } else {
+            return fatturaRepository.findAll();
+        }
+    }
+
 }
