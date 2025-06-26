@@ -132,4 +132,5 @@ public class ClienteService {
     public List<Cliente> getClientiOrdinatiPerProvincia() {
         return clienteRepository.findAllByOrderBySedeLegaleProvinciaAsc();
     }
+
 }
