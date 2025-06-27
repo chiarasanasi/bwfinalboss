@@ -23,7 +23,7 @@ public class UtenteController {
     private final UtenteService utenteService;
     private final CloudinaryService cloudinaryService;
 
-    @PostMapping("/{id}/avatar")
+    @PatchMapping("/{id}/avatar")
     public ResponseEntity<String> uploadAvatar(@PathVariable int id,
                                                @RequestParam("file") MultipartFile file) {
         try {
@@ -37,7 +37,7 @@ public class UtenteController {
     }
 
     @PutMapping("/{id}/ruoli")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Utente> aggiornaRuoli(@PathVariable int id, @RequestBody Set<Role> nuoviRuoli) throws NotFoundException {
         Utente aggiornato = utenteService.aggiornaRuoli(id, nuoviRuoli);
         return ResponseEntity.ok(aggiornato);

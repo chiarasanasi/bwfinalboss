@@ -90,12 +90,13 @@ public class ClienteService {
         cliente.setNomeContatto(clienteDto.getNomeContatto());
         cliente.setCognomeContatto(clienteDto.getCognomeContatto());
         cliente.setTelefonoContatto(clienteDto.getTelefonoContatto());
-        cliente.setLogoAziendaleUrl(clienteDto.getLogoAziendaleUrl());
+
+        String ragioneSocialeEnc = URLEncoder.encode(cliente.getRagioneSociale(), StandardCharsets.UTF_8);
+        cliente.setLogoAziendaleUrl("https://ui-avatars.com/api/?name=" + ragioneSocialeEnc);
+
         cliente.setTipoCliente(clienteDto.getTipoCliente());
 
-        Cliente updatedCliente = clienteRepository.save(cliente);
-        updatedCliente.setIndirizzi(new ArrayList<>(updatedCliente.getIndirizzi()));
-        return updatedCliente;
+        return clienteRepository.save(cliente);
     }
 
     public void deleteCliente(int id) throws NotFoundException {

@@ -38,6 +38,7 @@ public class Cliente {
     @Column(name = "telefono_contatto")
     private String telefonoContatto;
     private String logoAziendaleUrl;
+    private String sedeLegaProvincia;
     @Enumerated(EnumType.STRING)
     private TipoCliente tipoCliente;
     private String sedeLegaleProvincia;
