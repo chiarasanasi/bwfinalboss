@@ -6,6 +6,9 @@ import it.epicode.bwfinalboss.model.Cliente;
 import it.epicode.bwfinalboss.model.Fattura;
 import it.epicode.bwfinalboss.repository.ClienteRepository;
 import it.epicode.bwfinalboss.repository.FatturaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class FatturaService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     public Fattura creaFattura(FatturaDto dto) throws NotFoundException {
         Cliente cliente = clienteRepository.findById(dto.getClienteId()).orElseThrow(() -> new NotFoundException("Cliente non trovato"));
@@ -49,11 +55,16 @@ public class FatturaService {
                 .toList();
     }
 
+    @Transactional
     public void eliminaFattura(int id) throws NotFoundException {
-        if (!fatturaRepository.existsById(id)) {
-            throw new NotFoundException("Fattura non trovata con id: " + id);
-        }
-        fatturaRepository.deleteById(id);
+        Fattura f = fatturaRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Fattura non trovata con id: " + id));
+
+        f.setCliente(null);
+
+
+        Fattura managedFattura = em.merge(f);
+        em.remove(managedFattura);
     }
 
     private FatturaDto convertToDto(Fattura f) {

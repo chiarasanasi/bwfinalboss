@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Fattura {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private int id;
 
     private LocalDate data;
